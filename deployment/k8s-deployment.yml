@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azure-function-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azure-function-app
+  template:
+    metadata:
+      labels:
+        app: azure-function-app
+    spec:
+      containers:
+      - name: azure-function-container
+        image: TestACR9999.azurecr.io/myfunctionapp:${{ github.sha }}
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: azure-function-service
+spec:
+  selector:
+    app: azure-function-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
